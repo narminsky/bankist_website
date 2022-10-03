@@ -213,3 +213,79 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgTargets.forEach(img => {
   imgObserver.observe(img);
 });
+
+// Sliding Carousel
+const slides = document.querySelectorAll('.slide');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+const dotContainer = document.querySelector('.dots');
+
+let currentSlide = 0;
+
+const slider = document.querySelector('.slider');
+
+const orderSlides = function (curr) {
+  slides.forEach((slide, i) => {
+    slide.style.transform = `translateX(${100 * (i - curr)}%)`;
+  });
+};
+orderSlides(currentSlide);
+// 0% 100% 200% 300%
+
+// active dot
+const activateDot = function (currDot) {
+  document.querySelectorAll('.dots__dot').forEach(dot => dot.classList.remove('dots__dot--active'));
+
+  document.querySelector(`.dots__dot[data-slide='${currDot}']`).classList.add('dots__dot--active');
+  console.log('active dot: ' + currDot);
+};
+
+// Next slide
+const nextSlide = function () {
+  if (currentSlide == slides.length - 1) {
+    currentSlide = 0;
+  } else
+    currentSlide++;
+  console.log('next button: ' + currentSlide);
+  orderSlides(currentSlide);
+  activateDot(currentSlide);
+}
+btnRight.addEventListener('click', nextSlide);
+// -100% 0% 100% 200%
+
+// Prev slide
+const prevSlide = function () {
+  if (currentSlide == 0) {
+    currentSlide = slides.length - 1;
+  } else
+    currentSlide--;
+  orderSlides(currentSlide);
+  activateDot(currentSlide);
+};
+btnLeft.addEventListener('click', prevSlide);
+// -300% -200% -100% 0%
+
+// left-right arrow keys
+document.addEventListener('keydown', function (e) {
+  if (e.key == 'ArrowRight') nextSlide()
+  if (e.key == 'ArrowLeft') prevSlide()
+});
+
+// dots
+// create dots 
+const createDots = function () {
+  slides.forEach(function (_, i) {
+    dotContainer.innerHTML += `<button class='dots__dot' data-slide='${i}'></button>`;
+  });
+}
+createDots();
+
+activateDot(currentSlide);
+
+dotContainer.addEventListener('click', function (e) {
+  if (e.target.classList.contains('dots__dot')) {
+    const { slide } = e.target.dataset;
+    orderSlides(slide);
+    activateDot(slide);
+  }
+});
